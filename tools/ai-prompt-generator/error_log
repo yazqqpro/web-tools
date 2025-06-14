@@ -1,0 +1,45 @@
+[12-Jun-2025 23:45:22 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 07:21:17 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 07:50:03 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 07:51:33 Asia/Jakarta] PHP Warning:  file_get_contents(https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyA3C1cufLs0xnKOE1GRYalitFSSv-6ea0k): Failed to open stream: Connection timed out in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 07:51:33 Asia/Jakarta] PHP Warning:  Undefined variable $http_response_header in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 54
+[13-Jun-2025 07:51:33 Asia/Jakarta] PHP Warning:  Trying to access array offset on value of type null in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 54
+[13-Jun-2025 07:57:37 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 07:57:58 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 09:46:56 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 10:49:07 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 10:51:20 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 11:00:39 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 18:55:00 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 19:04:02 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 19:17:13 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 19:19:04 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 19:20:29 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 19:22:41 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[13-Jun-2025 23:16:50 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[14-Jun-2025 15:06:21 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[14-Jun-2025 15:11:28 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[14-Jun-2025 15:16:17 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[14-Jun-2025 17:03:51 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
+[14-Jun-2025 19:49:18 Asia/Jakarta] PHP Warning:  file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000126:SSL routines::unexpected eof while reading in /home/andn3765/public_html/app.andrias.web.id/tools/ai-prompt-generator/proxy.php on line 52
