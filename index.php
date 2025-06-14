@@ -1,6 +1,6 @@
 <?php
 $page_title = "Webtools Directory";
-include 'header.php'; // Memuat header dengan desain baru
+include 'header.php';
 
 /**
  * Fungsi untuk mengambil data definisi tools dari tools.json.
@@ -33,9 +33,8 @@ function get_usage_stats() {
 $tools = get_tools_data();
 $usage_stats = get_usage_stats();
 
-// PERUBAHAN: Gabungkan statistik ke dalam data tools untuk pengurutan
+// Gabungkan statistik ke dalam data tools untuk pengurutan
 foreach ($tools as $index => $tool) {
-    // Pastikan slug ada untuk menghindari error
     if (isset($tool['slug'])) {
         $tools[$index]['usage_count'] = $usage_stats[$tool['slug']] ?? 0;
     } else {
@@ -43,14 +42,21 @@ foreach ($tools as $index => $tool) {
     }
 }
 
-// PERUBAHAN: Urutkan tools berdasarkan usage_count (paling populer di atas)
+// Urutkan tools berdasarkan usage_count (paling populer di atas)
 usort($tools, function($a, $b) {
     return $b['usage_count'] - $a['usage_count'];
 });
+
+// Hitung statistik
+$total_tools = count($tools);
+$active_tools = count(array_filter($tools, function($tool) { 
+    return isset($tool['status']) && $tool['status'] === 'active'; 
+}));
+$total_usage = array_sum($usage_stats);
 ?>
 
 <style>
-/* Enhanced Professional Styling */
+/* Enhanced Professional Landing Page Styling */
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -65,8 +71,8 @@ usort($tools, function($a, $b) {
 .hero-section {
     background: var(--primary-gradient);
     color: white;
-    padding: 4rem 0;
-    margin: -2rem -15px 3rem -15px;
+    padding: 5rem 0;
+    margin: -2rem 0 3rem 0;
     position: relative;
     overflow: hidden;
 }
@@ -85,32 +91,38 @@ usort($tools, function($a, $b) {
 .hero-content {
     position: relative;
     z-index: 2;
+    text-align: center;
 }
 
 .hero-title {
     font-size: 3.5rem;
     font-weight: 800;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .hero-subtitle {
     font-size: 1.4rem;
     opacity: 0.9;
     font-weight: 300;
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto;
+    line-height: 1.6;
 }
 
 .hero-icon {
     font-size: 4rem;
-    margin-bottom: 1rem;
     opacity: 0.9;
 }
 
 /* Search Section Enhancement */
 .search-section {
-    margin: -1rem 0 3rem 0;
+    margin: -2rem 0 3rem 0;
     position: relative;
     z-index: 3;
 }
@@ -134,6 +146,7 @@ usort($tools, function($a, $b) {
     border-radius: var(--border-radius);
     background: white;
     transition: var(--transition);
+    width: 100%;
 }
 
 .search-input:focus {
@@ -149,11 +162,12 @@ usort($tools, function($a, $b) {
     transform: translateY(-50%);
     font-size: 1.3rem;
     color: #667eea;
+    transition: var(--transition);
 }
 
 /* Action Buttons Enhancement */
 .action-buttons-section {
-    padding: 2rem 1rem;
+    padding: 2rem;
     text-align: center;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: var(--border-radius);
@@ -206,14 +220,14 @@ usort($tools, function($a, $b) {
     font-size: 1.2rem;
 }
 
-/* Tools Grid Enhancement */
-.tools-section {
-    margin-top: 2rem;
-}
-
-.section-header {
+/* Stats Section Enhancement */
+.stats-section {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2.5rem;
+    margin: 3rem 0;
+    box-shadow: var(--card-shadow);
     text-align: center;
-    margin-bottom: 3rem;
 }
 
 .section-title {
@@ -227,7 +241,46 @@ usort($tools, function($a, $b) {
     font-size: 1.2rem;
     color: var(--text-secondary);
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0 auto 2rem auto;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.stat-item {
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    transition: var(--transition);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #667eea;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Tools Grid Enhancement */
+.tools-section {
+    margin-top: 2rem;
 }
 
 .tools-grid {
@@ -404,47 +457,12 @@ usort($tools, function($a, $b) {
     font-size: 1.1rem;
 }
 
-/* Stats Enhancement */
-.stats-section {
-    background: white;
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    margin: 3rem 0;
-    box-shadow: var(--card-shadow);
-    text-align: center;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.stat-item {
-    padding: 1.5rem;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-}
-
-.stat-number {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #667eea;
-    display: block;
-}
-
-.stat-label {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    margin-top: 0.5rem;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero-title {
         font-size: 2.5rem;
+        flex-direction: column;
+        gap: 0.5rem;
     }
     
     .hero-subtitle {
@@ -469,6 +487,15 @@ usort($tools, function($a, $b) {
         padding: 10px 20px;
         font-size: 0.9rem;
         margin: 6px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
     }
 }
 
@@ -500,11 +527,11 @@ usort($tools, function($a, $b) {
 <div class="hero-section">
     <div class="container">
         <div class="hero-content">
-            <div class="text-center">
+            <h1 class="hero-title">
                 <i class="material-icons hero-icon">build_circle</i>
-                <h1 class="hero-title">Webtools Directory</h1>
-                <p class="hero-subtitle">Koleksi alat bantu online modern untuk mempermudah alur kerja Anda dengan teknologi AI terdepan</p>
-            </div>
+                <span>Webtools Directory</span>
+            </h1>
+            <p class="hero-subtitle">Koleksi alat bantu online modern untuk mempermudah alur kerja Anda dengan teknologi AI terdepan</p>
         </div>
     </div>
 </div>
@@ -515,7 +542,7 @@ usort($tools, function($a, $b) {
         <div class="search-container">
             <div class="search-input-wrapper">
                 <i class="material-icons search-icon">search</i>
-                <input type="text" id="tool-search-input" class="form-control search-input" placeholder="Cari tools yang Anda butuhkan..." autocomplete="off">
+                <input type="text" id="tool-search-input" class="search-input" placeholder="Cari tools yang Anda butuhkan..." autocomplete="off">
             </div>
         </div>
     </div>
@@ -539,17 +566,18 @@ usort($tools, function($a, $b) {
 <div class="container">
     <div class="stats-section">
         <h2 class="section-title">Platform Statistics</h2>
+        <p class="section-subtitle">Lihat perkembangan dan penggunaan tools di platform kami</p>
         <div class="stats-grid">
             <div class="stat-item">
-                <span class="stat-number"><?php echo count($tools); ?></span>
+                <span class="stat-number"><?php echo $total_tools; ?></span>
                 <div class="stat-label">Total Tools</div>
             </div>
             <div class="stat-item">
-                <span class="stat-number"><?php echo count(array_filter($tools, function($tool) { return isset($tool['status']) && $tool['status'] === 'active'; })); ?></span>
+                <span class="stat-number"><?php echo $active_tools; ?></span>
                 <div class="stat-label">Active Tools</div>
             </div>
             <div class="stat-item">
-                <span class="stat-number"><?php echo array_sum($usage_stats); ?></span>
+                <span class="stat-number"><?php echo number_format($total_usage); ?></span>
                 <div class="stat-label">Total Usage</div>
             </div>
         </div>
@@ -559,7 +587,7 @@ usort($tools, function($a, $b) {
 <!-- Tools Section -->
 <div class="container">
     <div class="tools-section">
-        <div class="section-header">
+        <div class="text-center mb-4">
             <h2 class="section-title">Explore Our Tools</h2>
             <p class="section-subtitle">Temukan berbagai alat bantu yang dirancang untuk meningkatkan produktivitas dan kreativitas Anda</p>
         </div>
@@ -594,7 +622,7 @@ usort($tools, function($a, $b) {
                         <div class="tool-footer">
                             <div class="tool-usage">
                                 <i class="material-icons">trending_up</i>
-                                <span><?php echo $usage_count; ?> penggunaan</span>
+                                <span><?php echo number_format($usage_count); ?> penggunaan</span>
                             </div>
                             <?php if (!$is_maintenance): ?>
                                 <div class="tool-status-badge">Active</div>
