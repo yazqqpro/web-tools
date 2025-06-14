@@ -1,0 +1,20 @@
+{
+  "name": "webtools-directory",
+  "version": "1.0.0",
+  "description": "A collection of web tools and utilities",
+  "main": "index.php",
+  "scripts": {
+    "build": "echo 'No build process required for PHP application'",
+    "dev": "echo 'This is a PHP application. Use a local server like XAMPP or run: php -S localhost:8000'",
+    "start": "php -S localhost:8000"
+  },
+  "keywords": [
+    "webtools",
+    "php",
+    "utilities"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {}
+}
