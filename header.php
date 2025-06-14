@@ -29,7 +29,7 @@ if (preg_match('/\/tools\/([a-zA-Z0-9_-]+)\/?$/', $request_uri, $matches)) {
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -39,175 +39,225 @@ if (preg_match('/\/tools\/([a-zA-Z0-9_-]+)\/?$/', $request_uri, $matches)) {
     
     <style>
         :root {
-            --primary-color: #4285F4;
-            --primary-dark: #3367D6;
-            --text-primary: #202124;
-            --text-secondary: #5f6368;
-            --bg-light: #f8f9fa;
-            --border-color: #e0e0e0;
-            --shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-            --shadow-hover: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --primary-color: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary-color: #764ba2;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --bg-light: #f7fafc;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Inter', 'Google Sans', sans-serif;
-            background-color: var(--bg-light);
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
             color: var(--text-primary);
+            line-height: 1.6;
         }
 
-        /* Navbar */
+        /* Enhanced Navbar */
         .navbar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
         }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .navbar-brand:hover {
+            color: var(--primary-dark) !important;
+            transform: translateY(-1px);
+        }
+
         .navbar-brand .brand-container {
             display: flex;
             align-items: center;
+            gap: 12px;
         }
+
         .navbar-brand .brand-icon {
-            background-color: var(--primary-color);
-            color: #fff;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: var(--transition);
         }
+
+        .navbar-brand:hover .brand-icon {
+            transform: rotate(5deg) scale(1.05);
+        }
+
         .navbar-brand .brand-text {
             font-family: 'Google Sans', sans-serif;
             font-weight: 700;
-            font-size: 1.25rem;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+
         .nav-link {
             display: flex;
             align-items: center;
             gap: 8px;
             font-weight: 500;
-        }
-        .nav-link i { font-size: 20px; }
-
-        /* Hero Section */
-        .hero-section {
-            text-align: center;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-        }
-        .hero-title {
-            font-family: 'Google Sans', sans-serif;
-            font-weight: 700;
-            font-size: 2.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            color: var(--text-primary);
-        }
-        .hero-icon { font-size: 3.5rem; color: var(--primary-color); }
-        .hero-subtitle { font-size: 1.25rem; color: var(--text-secondary); }
-
-        /* Search Section */
-        .search-section { text-align: center; }
-        .search-container { max-width: 700px; margin: auto; }
-        .search-input-wrapper { position: relative; }
-        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
-        .search-input {
-            width: 100%;
-            padding: 1rem 1rem 1rem 3.5rem;
-            border-radius: 50px;
-            border: 1px solid var(--border-color);
-            font-size: 1.1rem;
-            transition: box-shadow 0.2s;
-        }
-        .search-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.3);
-        }
-
-        /* Tools Grid */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-        .tool-card-link { text-decoration: none; }
-        .tool-card-link.hidden { display: none; } /* Untuk search */
-        .tool-card {
-            background-color: #fff;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            display: flex;
-            gap: 1rem;
-            height: 100%;
-            transition: box-shadow 0.2s, transform 0.2s;
+            color: var(--text-primary) !important;
+            padding: 0.75rem 1rem !important;
+            border-radius: 8px;
+            transition: var(--transition);
             position: relative;
-            overflow: hidden;
         }
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
         }
-        .tool-icon-wrapper {
-            flex-shrink: 0;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: var(--bg-light);
+
+        .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        /* Container Enhancement */
+        .container {
+            max-width: 1200px;
+        }
+
+        main {
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Enhanced Footer */
+        .footer {
+            background: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
             color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
         }
-        .tool-content { flex-grow: 1; }
-        .tool-name { font-weight: 600; font-size: 1.1rem; color: var(--text-primary); }
-        .tool-description { color: var(--text-secondary); font-size: 0.9rem; }
-        .tool-usage { display: flex; align-items: center; gap: 4px; color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem; }
-        .tool-usage i { font-size: 16px; }
 
-        .maintenance-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ffc107;
-            color: #212529;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.25rem 0.6rem;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        .footer-copyright {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
-        .maintenance-badge i { font-size: 14px; }
-        .tool-card-link.tool-maintenance .tool-card { opacity: 0.7; }
 
-        /* No Results */
-        .no-results { text-align: center; padding: 3rem 0; }
-        .no-results-icon { font-size: 4rem; color: #bdc1c6; }
-        .no-results h3 { font-weight: 600; }
-
-        /* Footer */
-        .footer { background-color: #fff; padding: 1.5rem 0; margin-top: 3rem; border-top: 1px solid var(--border-color); }
-        .footer-content { display: flex; justify-content: space-between; align-items: center; }
-        .footer-link { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-secondary); }
-        .footer-copyright { color: var(--text-secondary); }
-
-        /* Back to Top */
+        /* Enhanced Back to Top */
         .back-to-top-btn {
             display: none;
             position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 50px;
-            height: 50px;
+            bottom: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             border: none;
-            box-shadow: var(--shadow);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .back-to-top-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-brand .brand-text {
+                font-size: 1.2rem;
+            }
+            
+            .navbar-brand .brand-icon {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 2s infinite;
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus States */
+        *:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Selection Color */
+        ::selection {
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--text-primary);
         }
     </style>
 </head>
@@ -217,11 +267,13 @@ if (preg_match('/\/tools\/([a-zA-Z0-9_-]+)\/?$/', $request_uri, $matches)) {
     <div class="container">
         <a class="navbar-brand" href="<?php echo $base_url; ?>">
             <div class="brand-container">
-                <div class="brand-icon"><i class="material-icons">build_circle</i></div>
+                <div class="brand-icon">
+                    <i class="material-icons">build_circle</i>
+                </div>
                 <span class="brand-text">Webtools Directory</span>
             </div>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -245,4 +297,4 @@ if (preg_match('/\/tools\/([a-zA-Z0-9_-]+)\/?$/', $request_uri, $matches)) {
     </div>
 </nav>
 
-<main class="container my-5 flex-grow-1">
+<main class="flex-grow-1">
