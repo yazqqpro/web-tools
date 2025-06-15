@@ -72,60 +72,6 @@ include $path_prefix . 'header.php';
     font-size: 1.1rem;
 }
 
-/* Enhanced Form Styling */
-.form-body {
-    padding: 2.5rem;
-}
-
-.form-section {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-    border-left: 4px solid #667eea;
-}
-
-.form-section h5 {
-    color: #495057;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.text-input-wrapper {
-    position: relative;
-    margin-bottom: 1.5rem;
-}
-
-.text-input {
-    border-radius: 12px;
-    border: 2px solid #e9ecef;
-    padding: 1rem;
-    font-size: 1rem;
-    transition: var(--transition);
-    resize: vertical;
-    min-height: 150px;
-}
-
-.text-input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    outline: none;
-}
-
-.char-counter {
-    position: absolute;
-    bottom: 0.5rem;
-    right: 1rem;
-    font-size: 0.85rem;
-    color: #6c757d;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-}
-
 /* CAPTCHA Section */
 .captcha-section {
     background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
@@ -186,6 +132,60 @@ include $path_prefix . 'header.php';
     border: 1px solid #f5c6cb;
     padding: 0.75rem;
     border-radius: 8px;
+}
+
+/* Enhanced Form Styling */
+.form-body {
+    padding: 2.5rem;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+}
+
+.form-section h5 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.text-input-wrapper {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.text-input {
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    padding: 1rem;
+    font-size: 1rem;
+    transition: var(--transition);
+    resize: vertical;
+    min-height: 150px;
+}
+
+.text-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+}
+
+.char-counter {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 1rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
 }
 
 /* Enhanced Form Controls */
@@ -503,10 +503,10 @@ include $path_prefix . 'header.php';
             <!-- CAPTCHA Section -->
             <div id="captchaSection" class="captcha-section">
                 <h5><i class="fas fa-shield-alt me-2"></i>Security Verification</h5>
-                <p class="mb-3">Please solve this simple math problem to continue:</p>
-                <div id="captchaQuestion" class="captcha-question">Loading...</div>
+                <p class="mb-3">Please enter the two numbers shown below:</p>
+                <div id="captchaNumbers" class="captcha-question">Loading...</div>
                 <div class="mt-3">
-                    <input type="number" id="captchaAnswer" class="captcha-input" placeholder="Answer" disabled>
+                    <input type="text" id="captchaAnswer" class="captcha-input" placeholder="Enter numbers" disabled maxlength="4">
                     <button id="verifyCaptchaBtn" class="btn btn-warning ms-2" disabled>
                         <i class="fas fa-check me-1"></i>Verify
                     </button>
@@ -678,86 +678,49 @@ document.addEventListener('DOMContentLoaded', function() {
     // CAPTCHA Elements
     const captchaSection = document.getElementById('captchaSection');
     const mainForm = document.getElementById('mainForm');
-    const captchaQuestion = document.getElementById('captchaQuestion');
+    const captchaNumbers = document.getElementById('captchaNumbers');
     const captchaAnswer = document.getElementById('captchaAnswer');
     const verifyCaptchaBtn = document.getElementById('verifyCaptchaBtn');
     const refreshCaptchaBtn = document.getElementById('refreshCaptchaBtn');
     const captchaStatus = document.getElementById('captchaStatus');
 
     let captchaVerified = false;
+    let currentNumbers = '';
 
     // CAPTCHA Functions
-    async function generateCaptcha() {
-        try {
-            const response = await fetch('captcha.php?action=generate');
-            const data = await response.json();
-            
-            if (data.success) {
-                captchaQuestion.textContent = data.question + ' = ?';
-                captchaAnswer.disabled = false;
-                verifyCaptchaBtn.disabled = false;
-                refreshCaptchaBtn.disabled = false;
-                captchaAnswer.value = '';
-                captchaAnswer.focus();
-                captchaStatus.innerHTML = '';
-            }
-        } catch (error) {
-            console.error('Error generating CAPTCHA:', error);
-            captchaStatus.innerHTML = '<div class="captcha-error">Failed to load CAPTCHA. Please refresh the page.</div>';
-        }
+    function generateCaptcha() {
+        const num1 = Math.floor(Math.random() * 90) + 10; // 10-99
+        const num2 = Math.floor(Math.random() * 90) + 10; // 10-99
+        currentNumbers = num1.toString() + num2.toString();
+        
+        captchaNumbers.textContent = `${num1}  ${num2}`;
+        captchaAnswer.disabled = false;
+        verifyCaptchaBtn.disabled = false;
+        refreshCaptchaBtn.disabled = false;
+        captchaAnswer.value = '';
+        captchaAnswer.focus();
+        captchaStatus.innerHTML = '';
     }
 
-    async function verifyCaptcha() {
+    function verifyCaptcha() {
         const answer = captchaAnswer.value.trim();
         if (!answer) {
-            captchaStatus.innerHTML = '<div class="captcha-error">Please enter an answer.</div>';
+            captchaStatus.innerHTML = '<div class="captcha-error">Please enter the numbers.</div>';
             return;
         }
 
-        try {
-            const response = await fetch('captcha.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=verify&answer=${encodeURIComponent(answer)}`
-            });
+        if (answer === currentNumbers) {
+            captchaVerified = true;
+            captchaStatus.innerHTML = '<div class="captcha-verified"><i class="fas fa-check-circle me-2"></i>Verification successful! You can now use the TTS converter.</div>';
             
-            const data = await response.json();
-            
-            if (data.success) {
-                captchaVerified = true;
-                captchaStatus.innerHTML = '<div class="captcha-verified"><i class="fas fa-check-circle me-2"></i>Verification successful! You can now use the TTS converter.</div>';
-                
-                setTimeout(() => {
-                    captchaSection.style.display = 'none';
-                    mainForm.style.display = 'block';
-                    mainForm.classList.add('fade-in');
-                }, 1000);
-            } else {
-                captchaStatus.innerHTML = '<div class="captcha-error"><i class="fas fa-times-circle me-2"></i>' + data.message + '</div>';
-                generateCaptcha(); // Generate new CAPTCHA
-            }
-        } catch (error) {
-            console.error('Error verifying CAPTCHA:', error);
-            captchaStatus.innerHTML = '<div class="captcha-error">Verification failed. Please try again.</div>';
-        }
-    }
-
-    async function checkCaptchaStatus() {
-        try {
-            const response = await fetch('captcha.php?action=check');
-            const data = await response.json();
-            
-            if (data.verified) {
-                captchaVerified = true;
+            setTimeout(() => {
                 captchaSection.style.display = 'none';
                 mainForm.style.display = 'block';
                 mainForm.classList.add('fade-in');
-            } else {
-                generateCaptcha();
-            }
-        } catch (error) {
-            console.error('Error checking CAPTCHA status:', error);
-            generateCaptcha();
+            }, 1000);
+        } else {
+            captchaStatus.innerHTML = '<div class="captcha-error"><i class="fas fa-times-circle me-2"></i>Incorrect numbers. Please try again.</div>';
+            generateCaptcha(); // Generate new numbers
         }
     }
 
@@ -923,8 +886,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    // Initialize CAPTCHA check
-    checkCaptchaStatus();
+    // Initialize CAPTCHA
+    generateCaptcha();
 
     // Add smooth scrolling for better UX
     document.documentElement.style.scrollBehavior = 'smooth';

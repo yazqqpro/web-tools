@@ -1,36 +1,22 @@
 <?php
 // File: captcha.php
-// Simple CAPTCHA system for TTS access
+// Simple number display CAPTCHA system for TTS access
 
 session_start();
 
 header('Content-Type: application/json');
 
 /**
- * Generate a simple 2-digit CAPTCHA
+ * Generate two random 2-digit numbers for display
  */
-function generateCaptcha() {
+function generateNumberCaptcha() {
     $num1 = rand(10, 99);
     $num2 = rand(10, 99);
-    $operation = rand(0, 1) ? '+' : '-';
-    
-    if ($operation === '+') {
-        $answer = $num1 + $num2;
-        $question = "$num1 + $num2";
-    } else {
-        // Ensure positive result for subtraction
-        if ($num1 < $num2) {
-            $temp = $num1;
-            $num1 = $num2;
-            $num2 = $temp;
-        }
-        $answer = $num1 - $num2;
-        $question = "$num1 - $num2";
-    }
+    $combined = $num1 . $num2; // Combine the numbers as a string
     
     return [
-        'question' => $question,
-        'answer' => $answer
+        'display' => "$num1  $num2",
+        'answer' => $combined
     ];
 }
 
@@ -48,7 +34,7 @@ function verifyCaptcha($userAnswer) {
         return false;
     }
     
-    $isCorrect = (int)$userAnswer === $_SESSION['captcha_answer'];
+    $isCorrect = trim($userAnswer) === $_SESSION['captcha_answer'];
     
     if ($isCorrect) {
         // Mark as verified for this session
@@ -82,13 +68,13 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 switch ($action) {
     case 'generate':
-        $captcha = generateCaptcha();
+        $captcha = generateNumberCaptcha();
         $_SESSION['captcha_answer'] = $captcha['answer'];
         $_SESSION['captcha_time'] = time();
         
         echo json_encode([
             'success' => true,
-            'question' => $captcha['question'],
+            'display' => $captcha['display'],
             'timestamp' => time()
         ]);
         break;
@@ -99,7 +85,7 @@ switch ($action) {
         
         echo json_encode([
             'success' => $isCorrect,
-            'message' => $isCorrect ? 'CAPTCHA verified successfully' : 'Incorrect answer. Please try again.'
+            'message' => $isCorrect ? 'Numbers verified successfully' : 'Incorrect numbers. Please try again.'
         ]);
         break;
         
