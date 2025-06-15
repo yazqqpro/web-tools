@@ -102,5 +102,13 @@
         "icon": "fas fa-baby-carriage",
         "description": "Hasilkan rekomendasi nama bayi yang unik dan bermakna menggunakan kami.",
         "status": "active"
+    },
+    {
+        "id": "tool_674e8a1b2c3d4",
+        "name": "Text to Speech Converter",
+        "slug": "text-to-speech-converter",
+        "icon": "fas fa-volume-up",
+        "description": "Konversi teks menjadi suara natural dengan berbagai pilihan voice AI yang berkualitas tinggi.",
+        "status": "active"
     }
 ]

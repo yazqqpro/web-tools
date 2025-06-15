@@ -1,0 +1,24 @@
+# Allow access to audio files
+<Files "*.mp3">
+    Order allow,deny
+    Allow from all
+</Files>
+
+<Files "*.wav">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# Prevent directory listing
+Options -Indexes
+
+# Set proper MIME types
+AddType audio/mpeg .mp3
+AddType audio/wav .wav
+
+# Enable caching for audio files
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType audio/mpeg "access plus 1 hour"
+    ExpiresByType audio/wav "access plus 1 hour"
+</IfModule>
