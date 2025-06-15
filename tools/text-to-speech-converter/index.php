@@ -503,10 +503,10 @@ include $path_prefix . 'header.php';
             <!-- CAPTCHA Section -->
             <div id="captchaSection" class="captcha-section">
                 <h5><i class="fas fa-shield-alt me-2"></i>Security Verification</h5>
-                <p class="mb-3">Please enter the two numbers shown below:</p>
-                <div id="captchaNumbers" class="captcha-question">Loading...</div>
+                <p class="mb-3">Please solve this simple math problem:</p>
+                <div id="captchaQuestion" class="captcha-question">Loading...</div>
                 <div class="mt-3">
-                    <input type="text" id="captchaAnswer" class="captcha-input" placeholder="Enter numbers" disabled maxlength="4">
+                    <input type="number" id="captchaAnswer" class="captcha-input" placeholder="Answer" disabled>
                     <button id="verifyCaptchaBtn" class="btn btn-warning ms-2" disabled>
                         <i class="fas fa-check me-1"></i>Verify
                     </button>
@@ -678,22 +678,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // CAPTCHA Elements
     const captchaSection = document.getElementById('captchaSection');
     const mainForm = document.getElementById('mainForm');
-    const captchaNumbers = document.getElementById('captchaNumbers');
+    const captchaQuestion = document.getElementById('captchaQuestion');
     const captchaAnswer = document.getElementById('captchaAnswer');
     const verifyCaptchaBtn = document.getElementById('verifyCaptchaBtn');
     const refreshCaptchaBtn = document.getElementById('refreshCaptchaBtn');
     const captchaStatus = document.getElementById('captchaStatus');
 
     let captchaVerified = false;
-    let currentNumbers = '';
+    let currentAnswer = 0;
 
     // CAPTCHA Functions
     function generateCaptcha() {
-        const num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-        const num2 = Math.floor(Math.random() * 90) + 10; // 10-99
-        currentNumbers = num1.toString() + num2.toString();
+        const num1 = Math.floor(Math.random() * 20) + 1; // 1-20
+        const num2 = Math.floor(Math.random() * 20) + 1; // 1-20
+        const operation = Math.random() > 0.5 ? '+' : '-';
         
-        captchaNumbers.textContent = `${num1}  ${num2}`;
+        if (operation === '+') {
+            currentAnswer = num1 + num2;
+            captchaQuestion.textContent = `${num1} + ${num2} = ?`;
+        } else {
+            // Ensure positive result for subtraction
+            const larger = Math.max(num1, num2);
+            const smaller = Math.min(num1, num2);
+            currentAnswer = larger - smaller;
+            captchaQuestion.textContent = `${larger} - ${smaller} = ?`;
+        }
+        
         captchaAnswer.disabled = false;
         verifyCaptchaBtn.disabled = false;
         refreshCaptchaBtn.disabled = false;
@@ -703,13 +713,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function verifyCaptcha() {
-        const answer = captchaAnswer.value.trim();
-        if (!answer) {
-            captchaStatus.innerHTML = '<div class="captcha-error">Please enter the numbers.</div>';
+        const answer = parseInt(captchaAnswer.value);
+        if (isNaN(answer)) {
+            captchaStatus.innerHTML = '<div class="captcha-error">Please enter a valid number.</div>';
             return;
         }
 
-        if (answer === currentNumbers) {
+        if (answer === currentAnswer) {
             captchaVerified = true;
             captchaStatus.innerHTML = '<div class="captcha-verified"><i class="fas fa-check-circle me-2"></i>Verification successful! You can now use the TTS converter.</div>';
             
@@ -719,8 +729,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 mainForm.classList.add('fade-in');
             }, 1000);
         } else {
-            captchaStatus.innerHTML = '<div class="captcha-error"><i class="fas fa-times-circle me-2"></i>Incorrect numbers. Please try again.</div>';
-            generateCaptcha(); // Generate new numbers
+            captchaStatus.innerHTML = '<div class="captcha-error"><i class="fas fa-times-circle me-2"></i>Incorrect answer. Please try again.</div>';
+            generateCaptcha(); // Generate new problem
         }
     }
 
