@@ -10,66 +10,11 @@ include $path_prefix . 'header.php';
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --info-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     --card-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
     --border-radius: 16px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Main Container Enhancement */
-.tts-converter-container {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-/* Form Card Enhancement */
-.converter-form-card {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
-    border: none;
-    overflow: hidden;
-    transition: var(--transition);
-}
-
-.converter-form-card:hover {
-    box-shadow: var(--card-shadow-hover);
-}
-
-.form-header {
-    background: var(--primary-gradient);
-    color: white;
-    padding: 2rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.form-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23pattern)"/></svg>');
-}
-
-.form-header h1 {
-    position: relative;
-    z-index: 2;
-    margin: 0;
-    font-size: 2.5rem;
-    font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.form-header p {
-    position: relative;
-    z-index: 2;
-    margin: 0.5rem 0 0 0;
-    opacity: 0.9;
-    font-size: 1.1rem;
 }
 
 /* CAPTCHA Section */
@@ -186,6 +131,94 @@ include $path_prefix . 'header.php';
     background: rgba(255, 255, 255, 0.9);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
+}
+
+/* Text Improvement Section */
+.text-improvement-section {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border: 2px solid #2196f3;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.improvement-btn {
+    background: var(--info-gradient);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.improvement-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.improvement-btn:disabled {
+    opacity: 0.7;
+    transform: none;
+    cursor: not-allowed;
+}
+
+.improvement-loading {
+    display: none;
+    margin-top: 1rem;
+    color: #1976d2;
+    font-weight: 500;
+}
+
+.improvement-result {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border-left: 4px solid #2196f3;
+    text-align: left;
+    display: none;
+}
+
+.improvement-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.improvement-action-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-apply {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-apply:hover {
+    background: #45a049;
+}
+
+.btn-discard {
+    background: #f44336;
+    color: white;
+}
+
+.btn-discard:hover {
+    background: #da190b;
 }
 
 /* Enhanced Form Controls */
@@ -437,6 +470,16 @@ include $path_prefix . 'header.php';
         width: 100px;
         font-size: 1rem;
     }
+
+    .improvement-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .improvement-action-btn {
+        width: 100%;
+        max-width: 200px;
+    }
 }
 
 /* Animation Classes */
@@ -524,6 +567,31 @@ include $path_prefix . 'header.php';
                         <textarea id="textInput" class="form-control text-input" placeholder="Enter your text here... You can write up to 5000 characters for conversion to speech."></textarea>
                         <div class="char-counter">
                             <span id="charCount">0</span>/5000
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Improvement Section -->
+                <div class="text-improvement-section">
+                    <h6><i class="fas fa-magic me-2"></i>Perbaiki Kalimat dengan AI</h6>
+                    <p class="mb-3">Tingkatkan kualitas teks Anda sebelum dikonversi menjadi suara</p>
+                    <button id="improveTextBtn" class="improvement-btn">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="display: none;"></span>
+                        <i class="fas fa-wand-magic-sparkles me-2"></i>Perbaiki Teks
+                    </button>
+                    <div id="improvementLoading" class="improvement-loading">
+                        <i class="fas fa-cog fa-spin me-2"></i>Sedang memperbaiki teks Anda...
+                    </div>
+                    <div id="improvementResult" class="improvement-result">
+                        <h6><i class="fas fa-sparkles me-2"></i>Teks yang Diperbaiki:</h6>
+                        <div id="improvedText" style="white-space: pre-wrap; line-height: 1.6;"></div>
+                        <div class="improvement-actions">
+                            <button id="applyImprovedText" class="improvement-action-btn btn-apply">
+                                <i class="fas fa-check me-1"></i>Gunakan Teks Ini
+                            </button>
+                            <button id="discardImprovedText" class="improvement-action-btn btn-discard">
+                                <i class="fas fa-times me-1"></i>Buang
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -684,6 +752,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const refreshCaptchaBtn = document.getElementById('refreshCaptchaBtn');
     const captchaStatus = document.getElementById('captchaStatus');
 
+    // Text Improvement Elements
+    const improveTextBtn = document.getElementById('improveTextBtn');
+    const improvementLoading = document.getElementById('improvementLoading');
+    const improvementResult = document.getElementById('improvementResult');
+    const improvedText = document.getElementById('improvedText');
+    const applyImprovedText = document.getElementById('applyImprovedText');
+    const discardImprovedText = document.getElementById('discardImprovedText');
+
     let captchaVerified = false;
     let currentAnswer = 0;
 
@@ -766,6 +842,88 @@ document.addEventListener('DOMContentLoaded', function() {
     pitchRange.addEventListener('input', function() {
         const value = parseInt(this.value);
         pitchValue.textContent = (value >= 0 ? '+' : '') + value + '%';
+    });
+
+    // Text Improvement Functions
+    async function improveText() {
+        const text = textInput.value.trim();
+        
+        if (!text) {
+            showError('Masukkan teks terlebih dahulu untuk diperbaiki.');
+            textInput.focus();
+            return;
+        }
+
+        if (text.length > 5000) {
+            showError('Teks terlalu panjang. Maksimal 5000 karakter.');
+            textInput.focus();
+            return;
+        }
+
+        // Show loading state
+        improveTextBtn.disabled = true;
+        improveTextBtn.querySelector('.spinner-border').style.display = 'inline-block';
+        improveTextBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><i class="fas fa-cog fa-spin me-2"></i>Memperbaiki...';
+        improvementLoading.style.display = 'block';
+        improvementResult.style.display = 'none';
+        errorMessage.style.display = 'none';
+
+        try {
+            const response = await fetch('https://app.andrias.web.id/api/ai.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: `Perbaiki kalimat berikut agar lebih baik, jelas, dan mudah dipahami. Pertahankan makna asli tetapi tingkatkan struktur kalimat, tata bahasa, dan kejelasan. Berikan hasil dalam bahasa yang sama dengan input:\n\n"${text}"`,
+                    model: 'gemini',
+                    key: 'free'
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Gagal memperbaiki teks. Silakan coba lagi.');
+            }
+
+            // Display improved text
+            const improved = data.data.ai_response || data.data.user_prompt || 'Tidak ada perbaikan yang dihasilkan.';
+            improvedText.textContent = improved;
+            improvementResult.style.display = 'block';
+            improvementResult.classList.add('fade-in');
+
+        } catch (error) {
+            console.error('Error:', error);
+            showError(`Gagal memperbaiki teks: ${error.message}`);
+        } finally {
+            // Reset button state
+            improveTextBtn.disabled = false;
+            improveTextBtn.querySelector('.spinner-border').style.display = 'none';
+            improveTextBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles me-2"></i>Perbaiki Teks';
+            improvementLoading.style.display = 'none';
+        }
+    }
+
+    // Text Improvement Event Listeners
+    improveTextBtn.addEventListener('click', improveText);
+
+    applyImprovedText.addEventListener('click', function() {
+        textInput.value = improvedText.textContent;
+        textInput.dispatchEvent(new Event('input')); // Trigger character counter update
+        improvementResult.style.display = 'none';
+        
+        // Show success message
+        const successMsg = document.createElement('div');
+        successMsg.className = 'alert alert-success mt-2';
+        successMsg.innerHTML = '<i class="fas fa-check-circle me-2"></i>Teks berhasil diperbaiki dan diterapkan!';
+        improvementResult.parentNode.insertBefore(successMsg, improvementResult.nextSibling);
+        
+        setTimeout(() => {
+            successMsg.remove();
+        }, 3000);
+    });
+
+    discardImprovedText.addEventListener('click', function() {
+        improvementResult.style.display = 'none';
     });
 
     // Functions
