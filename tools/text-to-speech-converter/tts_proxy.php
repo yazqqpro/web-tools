@@ -4,28 +4,30 @@
 ini_set('display_errors', 0);
 error_reporting(0);
 
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+session_start();
 
-// Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
+header('Content-Type: application/json');
 
 // --- Enhanced Configuration ---
 define('AUDIO_DIR', __DIR__ . '/audio/');
-define('ALLOWED_ORIGIN', 'https://app.andrias.web.id');
+define('LOG_FILE', __DIR__ . '/logs/tts_requests.log');
+define('ALLOWED_DOMAIN', 'web.app.andrias.web.id');
+define('CLEANUP_AGE_MINUTES', 10);
 
 // --- Rate Limiting ---
 define('RATE_LIMIT_DIR', __DIR__ . '/rate_limit_logs/');
-define('RATE_LIMIT_COUNT', 30); // 30 requests per hour
+define('RATE_LIMIT_COUNT', 15); // Reduced from 30 due to CAPTCHA protection
 define('RATE_LIMIT_WINDOW_SECONDS', 3600);
 
 // --- Pollinations AI TTS API Configuration ---
 define('TTS_API_BASE', 'https://text.pollinations.ai/');
+
+// --- IP Whitelist (optional - add trusted IPs here) ---
+$ip_whitelist = [
+    // Add trusted IP addresses here if needed
+    // '192.168.1.100',
+    // '10.0.0.50'
+];
 
 /**
  * Enhanced error logging with context
@@ -33,7 +35,33 @@ define('TTS_API_BASE', 'https://text.pollinations.ai/');
 function logError($message, $context = []) {
     $timestamp = date('Y-m-d H:i:s');
     $contextStr = !empty($context) ? ' Context: ' . json_encode($context) : '';
-    error_log("[$timestamp] TTS Converter: $message$contextStr");
+    error_log("[$timestamp] TTS Error: $message$contextStr");
+}
+
+/**
+ * Log TTS requests for monitoring
+ */
+function logRequest($message, $context = []) {
+    $timestamp = date('Y-m-d H:i:s');
+    $ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+    
+    $logEntry = [
+        'timestamp' => $timestamp,
+        'ip' => $ip,
+        'user_agent' => substr($userAgent, 0, 200),
+        'message' => $message,
+        'context' => $context
+    ];
+    
+    // Ensure logs directory exists
+    $logDir = dirname(LOG_FILE);
+    if (!is_dir($logDir)) {
+        mkdir($logDir, 0755, true);
+    }
+    
+    $logLine = json_encode($logEntry) . PHP_EOL;
+    file_put_contents(LOG_FILE, $logLine, FILE_APPEND | LOCK_EX);
 }
 
 /**
@@ -51,8 +79,107 @@ function sendResponse($success, $message, $data = null, $httpCode = 200) {
         $response = array_merge($response, $data);
     }
     
+    // Log the response
+    logRequest($success ? 'SUCCESS' : 'ERROR', [
+        'message' => $message,
+        'http_code' => $httpCode,
+        'has_data' => $data !== null
+    ]);
+    
     echo json_encode($response, JSON_UNESCAPED_SLASHES);
     exit;
+}
+
+/**
+ * Validate domain and referer
+ */
+function validateAccess() {
+    global $ip_whitelist;
+    
+    $ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '';
+    $referer = $_SERVER['HTTP_REFERER'] ?? '';
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    
+    // Check IP whitelist first (if configured)
+    if (!empty($ip_whitelist) && in_array($ip, $ip_whitelist)) {
+        logRequest('ACCESS_GRANTED', ['reason' => 'IP_WHITELIST', 'ip' => $ip]);
+        return true;
+    }
+    
+    // Validate domain access
+    $allowedDomains = [
+        ALLOWED_DOMAIN,
+        'app.andrias.web.id', // Fallback domain
+        'localhost' // For development
+    ];
+    
+    $accessGranted = false;
+    $reason = '';
+    
+    // Check HTTP_HOST
+    if (in_array($host, $allowedDomains)) {
+        $accessGranted = true;
+        $reason = 'HOST_MATCH';
+    }
+    
+    // Check referer
+    if (!$accessGranted && !empty($referer)) {
+        foreach ($allowedDomains as $domain) {
+            if (strpos($referer, $domain) !== false) {
+                $accessGranted = true;
+                $reason = 'REFERER_MATCH';
+                break;
+            }
+        }
+    }
+    
+    // Check origin
+    if (!$accessGranted && !empty($origin)) {
+        foreach ($allowedDomains as $domain) {
+            if (strpos($origin, $domain) !== false) {
+                $accessGranted = true;
+                $reason = 'ORIGIN_MATCH';
+                break;
+            }
+        }
+    }
+    
+    if ($accessGranted) {
+        logRequest('ACCESS_GRANTED', [
+            'reason' => $reason,
+            'host' => $host,
+            'referer' => $referer,
+            'origin' => $origin
+        ]);
+        return true;
+    }
+    
+    logRequest('ACCESS_DENIED', [
+        'ip' => $ip,
+        'host' => $host,
+        'referer' => $referer,
+        'origin' => $origin
+    ]);
+    
+    return false;
+}
+
+/**
+ * Check CAPTCHA verification
+ */
+function isCaptchaVerified() {
+    if (!isset($_SESSION['captcha_verified']) || !isset($_SESSION['captcha_verified_time'])) {
+        return false;
+    }
+    
+    // Verification expires after 30 minutes
+    if (time() - $_SESSION['captcha_verified_time'] > 1800) {
+        unset($_SESSION['captcha_verified'], $_SESSION['captcha_verified_time']);
+        return false;
+    }
+    
+    return true;
 }
 
 /**
@@ -78,6 +205,7 @@ function check_rate_limit($ip) {
     }
     
     if ($ip_data['count'] >= RATE_LIMIT_COUNT) {
+        logRequest('RATE_LIMIT_EXCEEDED', ['ip' => $ip, 'count' => $ip_data['count']]);
         return false;
     }
     
@@ -147,6 +275,13 @@ function generateSpeech($text, $voice, $speed, $pitch) {
         $apiUrl .= '&pitch=' . $pitch;
     }
     
+    logRequest('TTS_API_CALL', [
+        'voice' => $voice,
+        'text_length' => strlen($text),
+        'speed' => $speed,
+        'pitch' => $pitch
+    ]);
+    
     // Initialize cURL
     $ch = curl_init();
     curl_setopt_array($ch, [
@@ -198,27 +333,42 @@ function generateSpeech($text, $voice, $speed, $pitch) {
         return null;
     }
     
+    logRequest('AUDIO_GENERATED', [
+        'filename' => $filename,
+        'file_size' => strlen($audioData),
+        'voice' => $voice
+    ]);
+    
     // Return the URL to access the audio file
     $baseUrl = 'https://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . '/audio/';
     return $baseUrl . $filename;
 }
 
 /**
- * Clean up old audio files (older than 24 hours)
+ * Clean up old audio files (older than specified minutes)
  */
 function cleanupOldFiles() {
     if (!is_dir(AUDIO_DIR)) {
-        return;
+        return 0;
     }
     
     $files = glob(AUDIO_DIR . 'tts_*.mp3');
-    $cutoffTime = time() - (24 * 60 * 60); // 24 hours ago
+    $cutoffTime = time() - (CLEANUP_AGE_MINUTES * 60);
+    $deletedCount = 0;
     
     foreach ($files as $file) {
         if (filemtime($file) < $cutoffTime) {
-            unlink($file);
+            if (unlink($file)) {
+                $deletedCount++;
+            }
         }
     }
+    
+    if ($deletedCount > 0) {
+        logRequest('AUTO_CLEANUP', ['deleted_files' => $deletedCount]);
+    }
+    
+    return $deletedCount;
 }
 
 // --- Main Logic ---
@@ -226,14 +376,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendResponse(false, 'Only POST method allowed', null, 405);
 }
 
-// Enhanced origin validation
-$request_origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$normalized_origin = rtrim($request_origin, '/');
-$normalized_allowed = rtrim(ALLOWED_ORIGIN, '/');
+// Validate access permissions
+if (!validateAccess()) {
+    sendResponse(false, 'Access denied - Invalid domain or referer', null, 403);
+}
 
-if (!empty($request_origin) && $normalized_origin !== $normalized_allowed) {
-    logError("Unauthorized origin access", ['origin' => $request_origin]);
-    sendResponse(false, 'Access denied', null, 403);
+// Check CAPTCHA verification
+if (!isCaptchaVerified()) {
+    sendResponse(false, 'CAPTCHA verification required', ['require_captcha' => true], 403);
 }
 
 // Enhanced rate limiting
@@ -263,8 +413,8 @@ $pitch = intval($input_data['pitch'] ?? 0);
 $speed = max(0.5, min(2.0, $speed));
 $pitch = max(-50, min(50, $pitch));
 
-// Clean up old files periodically (10% chance)
-if (rand(1, 10) === 1) {
+// Clean up old files periodically (20% chance)
+if (rand(1, 5) === 1) {
     cleanupOldFiles();
 }
 

@@ -126,6 +126,68 @@ include $path_prefix . 'header.php';
     border-radius: 4px;
 }
 
+/* CAPTCHA Section */
+.captcha-section {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #ffc107;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.captcha-question {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #856404;
+    margin-bottom: 1rem;
+    font-family: 'Courier New', monospace;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    display: inline-block;
+    min-width: 200px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.captcha-input {
+    width: 120px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin: 0 0.5rem;
+}
+
+.captcha-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+}
+
+.captcha-status {
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+.captcha-verified {
+    color: #155724;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 0.75rem;
+    border-radius: 8px;
+}
+
+.captcha-error {
+    color: #721c24;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 0.75rem;
+    border-radius: 8px;
+}
+
 /* Enhanced Form Controls */
 .form-select, .form-control {
     border-radius: 8px;
@@ -335,51 +397,6 @@ include $path_prefix . 'header.php';
     box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
 }
 
-/* Voice Selection Enhancement */
-.voice-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.voice-option {
-    background: white;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.voice-option:hover {
-    border-color: #667eea;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-}
-
-.voice-option.selected {
-    border-color: #667eea;
-    background: rgba(102, 126, 234, 0.1);
-}
-
-.voice-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    color: #667eea;
-}
-
-.voice-name {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.voice-description {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
 /* Error Messages */
 .error-message {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
@@ -411,8 +428,14 @@ include $path_prefix . 'header.php';
         justify-content: center;
     }
     
-    .voice-grid {
-        grid-template-columns: 1fr;
+    .captcha-question {
+        font-size: 1.2rem;
+        min-width: 150px;
+    }
+    
+    .captcha-input {
+        width: 100px;
+        font-size: 1rem;
     }
 }
 
@@ -477,78 +500,97 @@ include $path_prefix . 'header.php';
         </div>
 
         <div class="form-body">
-            <div class="form-section">
-                <h5><i class="fas fa-edit me-2"></i>Text Input</h5>
-                <div class="text-input-wrapper">
-                    <textarea id="textInput" class="form-control text-input" placeholder="Enter your text here... You can write up to 5000 characters for conversion to speech."></textarea>
-                    <div class="char-counter">
-                        <span id="charCount">0</span>/5000
-                    </div>
+            <!-- CAPTCHA Section -->
+            <div id="captchaSection" class="captcha-section">
+                <h5><i class="fas fa-shield-alt me-2"></i>Security Verification</h5>
+                <p class="mb-3">Please solve this simple math problem to continue:</p>
+                <div id="captchaQuestion" class="captcha-question">Loading...</div>
+                <div class="mt-3">
+                    <input type="number" id="captchaAnswer" class="captcha-input" placeholder="Answer" disabled>
+                    <button id="verifyCaptchaBtn" class="btn btn-warning ms-2" disabled>
+                        <i class="fas fa-check me-1"></i>Verify
+                    </button>
+                    <button id="refreshCaptchaBtn" class="btn btn-outline-secondary ms-1" disabled>
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                 </div>
+                <div id="captchaStatus" class="captcha-status"></div>
             </div>
-            
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="form-section">
-                        <h5><i class="fas fa-microphone me-2"></i>Voice Selection</h5>
-                        <select id="voiceSelect" class="form-select">
-                            <option value="alloy">Alloy - Balanced & Clear</option>
-                            <option value="echo">Echo - Warm & Friendly</option>
-                            <option value="fable">Fable - Expressive & Dynamic</option>
-                            <option value="onyx">Onyx - Deep & Authoritative</option>
-                            <option value="nova">Nova - Bright & Energetic</option>
-                            <option value="shimmer">Shimmer - Soft & Gentle</option>
-                            <option value="coral">Coral - Natural & Smooth</option>
-                            <option value="verse">Verse - Poetic & Melodic</option>
-                            <option value="ballad">Ballad - Storytelling Voice</option>
-                            <option value="ash">Ash - Professional & Clear</option>
-                            <option value="sage">Sage - Wise & Mature</option>
-                            <option value="amuch">Amuch - Unique & Distinctive</option>
-                            <option value="aster">Aster - Fresh & Modern</option>
-                            <option value="brook">Brook - Flowing & Natural</option>
-                            <option value="clover">Clover - Sweet & Pleasant</option>
-                            <option value="dan">Dan - Strong & Confident</option>
-                            <option value="elan">Elan - Elegant & Refined</option>
-                            <option value="marilyn">Marilyn - Classic & Timeless</option>
-                            <option value="meadow">Meadow - Peaceful & Calm</option>
-                            <option value="jazz">Jazz - Smooth & Rhythmic</option>
-                            <option value="rio" selected>Rio - Vibrant & Lively</option>
-                            <option value="megan-wetherall">Megan Wetherall - Professional</option>
-                            <option value="jade-hardy">Jade Hardy - Contemporary</option>
-                            <option value="megan-wetherall-2025-03-07">Megan Wetherall (Enhanced)</option>
-                            <option value="jade-hardy-2025-03-07">Jade Hardy (Enhanced)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-section">
-                        <h5><i class="fas fa-cog me-2"></i>Audio Settings</h5>
-                        <div class="range-container">
-                            <div class="range-label">
-                                <label for="speedRange">Speech Speed</label>
-                                <span class="range-value" id="speedValue">1.0x</span>
-                            </div>
-                            <input type="range" class="form-range" id="speedRange" min="0.5" max="2.0" step="0.1" value="1.0">
-                        </div>
-                        <div class="range-container">
-                            <div class="range-label">
-                                <label for="pitchRange">Pitch</label>
-                                <span class="range-value" id="pitchValue">0%</span>
-                            </div>
-                            <input type="range" class="form-range" id="pitchRange" min="-50" max="50" step="5" value="0">
+
+            <div id="mainForm" style="display: none;">
+                <div class="form-section">
+                    <h5><i class="fas fa-edit me-2"></i>Text Input</h5>
+                    <div class="text-input-wrapper">
+                        <textarea id="textInput" class="form-control text-input" placeholder="Enter your text here... You can write up to 5000 characters for conversion to speech."></textarea>
+                        <div class="char-counter">
+                            <span id="charCount">0</span>/5000
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="d-grid gap-3">
-                <button id="convertBtn" class="btn convert-btn w-100">
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="display: none;"></span>
-                    <span id="btnText"><i class="fas fa-play me-2"></i>Convert to Speech</span>
-                </button>
-                <button type="button" class="btn action-btn btn-regenerate" data-bs-toggle="modal" data-bs-target="#supportModal">
-                    <i class="fas fa-heart me-2"></i>Support Development
-                </button>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="form-section">
+                            <h5><i class="fas fa-microphone me-2"></i>Voice Selection</h5>
+                            <select id="voiceSelect" class="form-select">
+                                <option value="alloy">Alloy - Balanced & Clear</option>
+                                <option value="echo">Echo - Warm & Friendly</option>
+                                <option value="fable">Fable - Expressive & Dynamic</option>
+                                <option value="onyx">Onyx - Deep & Authoritative</option>
+                                <option value="nova">Nova - Bright & Energetic</option>
+                                <option value="shimmer">Shimmer - Soft & Gentle</option>
+                                <option value="coral">Coral - Natural & Smooth</option>
+                                <option value="verse">Verse - Poetic & Melodic</option>
+                                <option value="ballad">Ballad - Storytelling Voice</option>
+                                <option value="ash">Ash - Professional & Clear</option>
+                                <option value="sage">Sage - Wise & Mature</option>
+                                <option value="amuch">Amuch - Unique & Distinctive</option>
+                                <option value="aster">Aster - Fresh & Modern</option>
+                                <option value="brook">Brook - Flowing & Natural</option>
+                                <option value="clover">Clover - Sweet & Pleasant</option>
+                                <option value="dan">Dan - Strong & Confident</option>
+                                <option value="elan">Elan - Elegant & Refined</option>
+                                <option value="marilyn">Marilyn - Classic & Timeless</option>
+                                <option value="meadow">Meadow - Peaceful & Calm</option>
+                                <option value="jazz">Jazz - Smooth & Rhythmic</option>
+                                <option value="rio" selected>Rio - Vibrant & Lively</option>
+                                <option value="megan-wetherall">Megan Wetherall - Professional</option>
+                                <option value="jade-hardy">Jade Hardy - Contemporary</option>
+                                <option value="megan-wetherall-2025-03-07">Megan Wetherall (Enhanced)</option>
+                                <option value="jade-hardy-2025-03-07">Jade Hardy (Enhanced)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-section">
+                            <h5><i class="fas fa-cog me-2"></i>Audio Settings</h5>
+                            <div class="range-container">
+                                <div class="range-label">
+                                    <label for="speedRange">Speech Speed</label>
+                                    <span class="range-value" id="speedValue">1.0x</span>
+                                </div>
+                                <input type="range" class="form-range" id="speedRange" min="0.5" max="2.0" step="0.1" value="1.0">
+                            </div>
+                            <div class="range-container">
+                                <div class="range-label">
+                                    <label for="pitchRange">Pitch</label>
+                                    <span class="range-value" id="pitchValue">0%</span>
+                                </div>
+                                <input type="range" class="form-range" id="pitchRange" min="-50" max="50" step="5" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-3">
+                    <button id="convertBtn" class="btn convert-btn w-100">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="display: none;"></span>
+                        <span id="btnText"><i class="fas fa-play me-2"></i>Convert to Speech</span>
+                    </button>
+                    <button type="button" class="btn action-btn btn-regenerate" data-bs-toggle="modal" data-bs-target="#supportModal">
+                        <i class="fas fa-heart me-2"></i>Support Development
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -633,6 +675,102 @@ document.addEventListener('DOMContentLoaded', function() {
     const regenerateBtn = document.getElementById('regenerateBtn');
     const errorMessage = document.getElementById('errorMessage');
 
+    // CAPTCHA Elements
+    const captchaSection = document.getElementById('captchaSection');
+    const mainForm = document.getElementById('mainForm');
+    const captchaQuestion = document.getElementById('captchaQuestion');
+    const captchaAnswer = document.getElementById('captchaAnswer');
+    const verifyCaptchaBtn = document.getElementById('verifyCaptchaBtn');
+    const refreshCaptchaBtn = document.getElementById('refreshCaptchaBtn');
+    const captchaStatus = document.getElementById('captchaStatus');
+
+    let captchaVerified = false;
+
+    // CAPTCHA Functions
+    async function generateCaptcha() {
+        try {
+            const response = await fetch('captcha.php?action=generate');
+            const data = await response.json();
+            
+            if (data.success) {
+                captchaQuestion.textContent = data.question + ' = ?';
+                captchaAnswer.disabled = false;
+                verifyCaptchaBtn.disabled = false;
+                refreshCaptchaBtn.disabled = false;
+                captchaAnswer.value = '';
+                captchaAnswer.focus();
+                captchaStatus.innerHTML = '';
+            }
+        } catch (error) {
+            console.error('Error generating CAPTCHA:', error);
+            captchaStatus.innerHTML = '<div class="captcha-error">Failed to load CAPTCHA. Please refresh the page.</div>';
+        }
+    }
+
+    async function verifyCaptcha() {
+        const answer = captchaAnswer.value.trim();
+        if (!answer) {
+            captchaStatus.innerHTML = '<div class="captcha-error">Please enter an answer.</div>';
+            return;
+        }
+
+        try {
+            const response = await fetch('captcha.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=verify&answer=${encodeURIComponent(answer)}`
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                captchaVerified = true;
+                captchaStatus.innerHTML = '<div class="captcha-verified"><i class="fas fa-check-circle me-2"></i>Verification successful! You can now use the TTS converter.</div>';
+                
+                setTimeout(() => {
+                    captchaSection.style.display = 'none';
+                    mainForm.style.display = 'block';
+                    mainForm.classList.add('fade-in');
+                }, 1000);
+            } else {
+                captchaStatus.innerHTML = '<div class="captcha-error"><i class="fas fa-times-circle me-2"></i>' + data.message + '</div>';
+                generateCaptcha(); // Generate new CAPTCHA
+            }
+        } catch (error) {
+            console.error('Error verifying CAPTCHA:', error);
+            captchaStatus.innerHTML = '<div class="captcha-error">Verification failed. Please try again.</div>';
+        }
+    }
+
+    async function checkCaptchaStatus() {
+        try {
+            const response = await fetch('captcha.php?action=check');
+            const data = await response.json();
+            
+            if (data.verified) {
+                captchaVerified = true;
+                captchaSection.style.display = 'none';
+                mainForm.style.display = 'block';
+                mainForm.classList.add('fade-in');
+            } else {
+                generateCaptcha();
+            }
+        } catch (error) {
+            console.error('Error checking CAPTCHA status:', error);
+            generateCaptcha();
+        }
+    }
+
+    // CAPTCHA Event Listeners
+    verifyCaptchaBtn.addEventListener('click', verifyCaptcha);
+    refreshCaptchaBtn.addEventListener('click', generateCaptcha);
+    
+    captchaAnswer.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            verifyCaptcha();
+        }
+    });
+
     // Character counter
     textInput.addEventListener('input', function() {
         const count = this.value.length;
@@ -698,6 +836,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Convert button click handler
     convertBtn.addEventListener('click', async function() {
+        if (!captchaVerified) {
+            showError('Please complete the CAPTCHA verification first.');
+            return;
+        }
+
         const text = textInput.value.trim();
         
         if (!text) {
@@ -738,6 +881,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (!response.ok || !data.success) {
+                if (data.require_captcha) {
+                    captchaVerified = false;
+                    mainForm.style.display = 'none';
+                    captchaSection.style.display = 'block';
+                    generateCaptcha();
+                    throw new Error('Security verification required. Please complete the CAPTCHA.');
+                }
                 throw new Error(data.message || 'Failed to convert text to speech. Please try again.');
             }
 
@@ -751,6 +901,8 @@ document.addEventListener('DOMContentLoaded', function() {
             let userMessage = `Conversion failed: ${error.message}`;
             if (error.message.includes('network') || error.message.includes('timeout')) {
                 userMessage += '<br><br><strong>💡 Try:</strong> Check your internet connection and try again.';
+            } else if (error.message.includes('Rate limit')) {
+                userMessage += '<br><br><strong>💡 Try:</strong> Please wait a moment before trying again.';
             }
             showError(userMessage);
         } finally {
@@ -770,6 +922,9 @@ document.addEventListener('DOMContentLoaded', function() {
     tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+
+    // Initialize CAPTCHA check
+    checkCaptchaStatus();
 
     // Add smooth scrolling for better UX
     document.documentElement.style.scrollBehavior = 'smooth';
