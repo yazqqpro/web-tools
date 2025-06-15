@@ -17,6 +17,62 @@ include $path_prefix . 'header.php';
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Main Container Enhancement */
+.tts-converter-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Form Card Enhancement */
+.converter-form-card {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    border: none;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.converter-form-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.form-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23pattern)"/></svg>');
+}
+
+.form-header h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-header p {
+    position: relative;
+    z-index: 2;
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
 /* CAPTCHA Section */
 .captcha-section {
     background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
@@ -869,14 +925,16 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.style.display = 'none';
 
         try {
-            const response = await fetch('https://app.andrias.web.id/api/ai.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    prompt: `Perbaiki kalimat berikut agar lebih baik, jelas, dan mudah dipahami. Pertahankan makna asli tetapi tingkatkan struktur kalimat, tata bahasa, dan kejelasan. Berikan hasil dalam bahasa yang sama dengan input:\n\n"${text}"`,
-                    model: 'gemini',
-                    key: 'free'
-                })
+            // Build GET URL with parameters
+            const prompt = encodeURIComponent(`Perbaiki kalimat berikut agar lebih baik, jelas, dan mudah dipahami. Pertahankan makna asli tetapi tingkatkan struktur kalimat, tata bahasa, dan kejelasan. Berikan hasil dalam bahasa yang sama dengan input:\n\n"${text}"`);
+            const apiUrl = `https://app.andrias.web.id/api/ai.php?prompt=${prompt}&model=gemini&key=free`;
+
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: { 
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
             });
 
             const data = await response.json();
