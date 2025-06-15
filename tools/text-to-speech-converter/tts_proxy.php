@@ -24,6 +24,9 @@ define('RATE_LIMIT_DIR', __DIR__ . '/rate_limit_logs/');
 define('RATE_LIMIT_COUNT', 30); // 30 requests per hour
 define('RATE_LIMIT_WINDOW_SECONDS', 3600);
 
+// --- Pollinations AI TTS API Configuration ---
+define('TTS_API_BASE', 'https://text.pollinations.ai/');
+
 /**
  * Enhanced error logging with context
  */
@@ -105,12 +108,21 @@ function validateAndSanitizeText($text) {
 }
 
 /**
- * Generate speech using Web Speech API simulation (for demo)
- * In production, you would integrate with services like:
- * - Azure Cognitive Services Speech
- * - Google Cloud Text-to-Speech
- * - Amazon Polly
- * - ElevenLabs API
+ * Validate voice parameter
+ */
+function validateVoice($voice) {
+    $allowedVoices = [
+        'alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer', 'coral', 'verse', 
+        'ballad', 'ash', 'sage', 'amuch', 'aster', 'brook', 'clover', 'dan', 
+        'elan', 'marilyn', 'meadow', 'jazz', 'rio', 'megan-wetherall', 'jade-hardy', 
+        'megan-wetherall-2025-03-07', 'jade-hardy-2025-03-07'
+    ];
+    
+    return in_array($voice, $allowedVoices) ? $voice : 'rio';
+}
+
+/**
+ * Generate speech using Pollinations AI TTS API
  */
 function generateSpeech($text, $voice, $speed, $pitch) {
     // Create audio directory if it doesn't exist
@@ -121,27 +133,92 @@ function generateSpeech($text, $voice, $speed, $pitch) {
         }
     }
     
-    // For demo purposes, we'll create a simple audio file placeholder
-    // In production, replace this with actual TTS API calls
+    // URL encode the text for the API
+    $encodedText = urlencode($text);
     
-    $filename = 'tts_' . time() . '_' . md5($text . $voice) . '.mp3';
+    // Build the API URL
+    $apiUrl = TTS_API_BASE . $encodedText . '?model=openai-audio&voice=' . $voice;
+    
+    // Add speed and pitch parameters if supported by the API
+    if ($speed != 1.0) {
+        $apiUrl .= '&speed=' . $speed;
+    }
+    if ($pitch != 0) {
+        $apiUrl .= '&pitch=' . $pitch;
+    }
+    
+    // Initialize cURL
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $apiUrl,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_TIMEOUT => 60,
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; TTS-Converter/1.0)',
+        CURLOPT_HTTPHEADER => [
+            'Accept: audio/*',
+            'Cache-Control: no-cache'
+        ]
+    ]);
+    
+    $audioData = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+    
+    // Check for errors
+    if ($curlError || $httpCode !== 200) {
+        logError("TTS API request failed", [
+            'http_code' => $httpCode,
+            'curl_error' => $curlError,
+            'voice' => $voice,
+            'text_length' => strlen($text)
+        ]);
+        return null;
+    }
+    
+    // Validate that we received audio data
+    if (empty($audioData) || !str_contains($contentType, 'audio')) {
+        logError("Invalid audio response from TTS API", [
+            'content_type' => $contentType,
+            'data_length' => strlen($audioData)
+        ]);
+        return null;
+    }
+    
+    // Generate unique filename
+    $filename = 'tts_' . time() . '_' . md5($text . $voice . $speed . $pitch) . '.mp3';
     $filepath = AUDIO_DIR . $filename;
     
-    // Simulate TTS processing time
-    usleep(rand(500000, 2000000)); // 0.5-2 seconds
-    
-    // For demo: create a simple audio file (in production, this would be the actual TTS output)
-    // This is just a placeholder - replace with actual TTS service integration
-    $demoAudioContent = base64_decode('SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV6urq6urq6urq6urq6urq6urq6urq6urq6v////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAASDs90hvAAAAAAAAAAAAAAAAAAAA//tQxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==');
-    
-    if (file_put_contents($filepath, $demoAudioContent) === false) {
-        logError("Failed to create audio file", ['filepath' => $filepath]);
+    // Save the audio file
+    if (file_put_contents($filepath, $audioData) === false) {
+        logError("Failed to save audio file", ['filepath' => $filepath]);
         return null;
     }
     
     // Return the URL to access the audio file
-    $base_url = 'https://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . '/audio/';
-    return $base_url . $filename;
+    $baseUrl = 'https://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . '/audio/';
+    return $baseUrl . $filename;
+}
+
+/**
+ * Clean up old audio files (older than 24 hours)
+ */
+function cleanupOldFiles() {
+    if (!is_dir(AUDIO_DIR)) {
+        return;
+    }
+    
+    $files = glob(AUDIO_DIR . 'tts_*.mp3');
+    $cutoffTime = time() - (24 * 60 * 60); // 24 hours ago
+    
+    foreach ($files as $file) {
+        if (filemtime($file) < $cutoffTime) {
+            unlink($file);
+        }
+    }
 }
 
 // --- Main Logic ---
@@ -178,23 +255,18 @@ if (!$textValidation['valid']) {
 }
 
 $text = $textValidation['text'];
-$voice = $input_data['voice'] ?? 'en-US-AriaNeural';
+$voice = validateVoice($input_data['voice'] ?? 'rio');
 $speed = floatval($input_data['speed'] ?? 1.0);
 $pitch = intval($input_data['pitch'] ?? 0);
-
-// Validate voice parameter
-$allowedVoices = [
-    'en-US-AriaNeural', 'en-US-DavisNeural', 'en-US-JennyNeural', 'en-US-GuyNeural',
-    'en-GB-SoniaNeural', 'en-GB-RyanNeural', 'id-ID-ArdiNeural', 'id-ID-GadisNeural'
-];
-
-if (!in_array($voice, $allowedVoices)) {
-    $voice = 'en-US-AriaNeural';
-}
 
 // Validate speed and pitch ranges
 $speed = max(0.5, min(2.0, $speed));
 $pitch = max(-50, min(50, $pitch));
+
+// Clean up old files periodically (10% chance)
+if (rand(1, 10) === 1) {
+    cleanupOldFiles();
+}
 
 // Generate speech
 $audioUrl = generateSpeech($text, $voice, $speed, $pitch);

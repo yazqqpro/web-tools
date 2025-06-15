@@ -492,14 +492,31 @@ include $path_prefix . 'header.php';
                     <div class="form-section">
                         <h5><i class="fas fa-microphone me-2"></i>Voice Selection</h5>
                         <select id="voiceSelect" class="form-select">
-                            <option value="en-US-AriaNeural">Aria (English US) - Female</option>
-                            <option value="en-US-DavisNeural">Davis (English US) - Male</option>
-                            <option value="en-US-JennyNeural">Jenny (English US) - Female</option>
-                            <option value="en-US-GuyNeural">Guy (English US) - Male</option>
-                            <option value="en-GB-SoniaNeural">Sonia (English UK) - Female</option>
-                            <option value="en-GB-RyanNeural">Ryan (English UK) - Male</option>
-                            <option value="id-ID-ArdiNeural">Ardi (Indonesian) - Male</option>
-                            <option value="id-ID-GadisNeural">Gadis (Indonesian) - Female</option>
+                            <option value="alloy">Alloy - Balanced & Clear</option>
+                            <option value="echo">Echo - Warm & Friendly</option>
+                            <option value="fable">Fable - Expressive & Dynamic</option>
+                            <option value="onyx">Onyx - Deep & Authoritative</option>
+                            <option value="nova">Nova - Bright & Energetic</option>
+                            <option value="shimmer">Shimmer - Soft & Gentle</option>
+                            <option value="coral">Coral - Natural & Smooth</option>
+                            <option value="verse">Verse - Poetic & Melodic</option>
+                            <option value="ballad">Ballad - Storytelling Voice</option>
+                            <option value="ash">Ash - Professional & Clear</option>
+                            <option value="sage">Sage - Wise & Mature</option>
+                            <option value="amuch">Amuch - Unique & Distinctive</option>
+                            <option value="aster">Aster - Fresh & Modern</option>
+                            <option value="brook">Brook - Flowing & Natural</option>
+                            <option value="clover">Clover - Sweet & Pleasant</option>
+                            <option value="dan">Dan - Strong & Confident</option>
+                            <option value="elan">Elan - Elegant & Refined</option>
+                            <option value="marilyn">Marilyn - Classic & Timeless</option>
+                            <option value="meadow">Meadow - Peaceful & Calm</option>
+                            <option value="jazz">Jazz - Smooth & Rhythmic</option>
+                            <option value="rio" selected>Rio - Vibrant & Lively</option>
+                            <option value="megan-wetherall">Megan Wetherall - Professional</option>
+                            <option value="jade-hardy">Jade Hardy - Contemporary</option>
+                            <option value="megan-wetherall-2025-03-07">Megan Wetherall (Enhanced)</option>
+                            <option value="jade-hardy-2025-03-07">Jade Hardy (Enhanced)</option>
                         </select>
                     </div>
                 </div>
